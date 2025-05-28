@@ -4,137 +4,127 @@ import { useParams, useNavigate } from "react-router-dom";
 import { SerieContext } from "../context/SerieContext";
 
 function SerieFormPage() {
-    const { idserie } = useParams();
-    const navigate = useNavigate();
+  const { idserie } = useParams();
+  const navigate = useNavigate();
+  const { series, setSeries } = useContext(SerieContext);
 
-    const { series, setSeries } = useContext(SerieContext);
+  const [nombre, setNombre] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [imagenURL, setImagenURL] = useState("");
 
-    const [nombre, setNombre] = useState("");
-    const [categoria, setCategoria] = useState("");
-    const [imagenTexto, setImagenTexto] = useState("");
+  useEffect(() => {
+    if (idserie) {
+      const serieEdit = series.find((s) => s.cod === Number(idserie));
+      if (serieEdit) {
+        setNombre(serieEdit.nom);
+        setCategoria(serieEdit.cat);
+        setImagenURL(serieEdit.img);
+      }
+    }
+  }, [idserie, series]);
 
-    useEffect(() => {
-        if (idserie) {
-            const serieEdit = series.find((s) => s.cod === Number(idserie));
-            if (serieEdit) {
-                setNombre(serieEdit.nom);
-                setCategoria(serieEdit.cat);
-                setImagenTexto(serieEdit.img);
-            }
-        }
-    }, [idserie, series]);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!nombre || !categoria) return;
 
-    useEffect(() => {
-        setImagenTexto(nombre.replace(/\s+/g, "-").toLowerCase() + ".png");
-    }, [nombre]);
+    if (idserie) {
+      const newSeries = series.map((s) =>
+        s.cod === Number(idserie)
+          ? { ...s, nom: nombre, cat: categoria, img: imagenURL }
+          : s
+      );
+      setSeries(newSeries);
+    } else {
+      const maxCod = series.reduce((max, s) => (s.cod > max ? s.cod : max), 0);
+      const nuevaSerie = {
+        cod: maxCod + 1,
+        nom: nombre,
+        cat: categoria,
+        img: imagenURL,
+      };
+      setSeries([...series, nuevaSerie]);
+    }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!nombre || !categoria) return;
+    navigate("/series");
+  };
 
-        if (idserie) {
-            const newSeries = series.map((s) =>
-                s.cod === Number(idserie)
-                    ? { ...s, nom: nombre, cat: categoria, img: imagenTexto }
-                    : s
-            );
-            setSeries(newSeries);
-        } else {
-            const maxCod = series.reduce(
-                (max, s) => (s.cod > max ? s.cod : max),
-                0
-            );
-            const nuevaSerie = {
-                cod: maxCod + 1,
-                nom: nombre,
-                cat: categoria,
-                img: imagenTexto,
-            };
-            setSeries([...series, nuevaSerie]);
-        }
+  const previewURL = imagenURL.trim()
+    ? imagenURL.trim()
+    : "https://dummyimage.com/400x250/000/fff&text=preview";
 
-        navigate("/series");
-    };
-
-    return (
-        <>
-            <HeaderComponent />
-            <div className="container mt-3">
-                <div className="border-bottom pb-3 mb-3">
-                    <h3>{idserie ? "Editar" : "Nuevo"} - Serie</h3>
-                </div>
-                <form className="row" onSubmit={handleSubmit}>
-                    <div className="col-md-4">
-                        <img
-                            id="fileImg"
-                            className="card-img-top"
-                            src={`https://dummyimage.com/400x250/000/fff&text=${imagenTexto}`}
-                            alt="preview"
-                        />
-                    </div>
-                    <div className="col-md-8">
-                        <div className="mb-3">
-                            <label htmlFor="inputName" className="form-label">
-                                Nombre
-                            </label>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="inputName"
-                                value={nombre}
-                                onChange={(e) => setNombre(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label
-                                htmlFor="inputCategory"
-                                className="form-label"
-                            >
-                                Categoria
-                            </label>
-                            <select
-                                className="form-select"
-                                id="inputCategory"
-                                value={categoria}
-                                onChange={(e) => setCategoria(e.target.value)}
-                                required
-                            >
-                                <option value="">Seleccione una opción</option>
-                                <option value="Horror">Horror</option>
-                                <option value="Comedy">Comedy</option>
-                                <option value="Action">Action</option>
-                                <option value="Drama">Drama</option>
-                            </select>
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="inputImage" className="form-label">
-                                Imagen (no se sube, solo muestra)
-                            </label>
-                            <input
-                                type="file"
-                                className="form-control"
-                                id="inputImage"
-                                disabled
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <button className="btn btn-primary me-2" type="submit">
-                                Guardar
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={() => navigate("/series")}
-                            >
-                                Cancelar
-                            </button>
-                        </div>
-                    </div>
-                </form>
+  return (
+    <>
+      <HeaderComponent />
+      <div className="container mt-3">
+        <div className="border-bottom pb-3 mb-3">
+          <h3>{idserie ? "Editar" : "Nuevo"} - Serie</h3>
+        </div>
+        <form className="row" onSubmit={handleSubmit}>
+          <div className="col-md-4">
+            <img
+              className="card-img-top"
+              src={previewURL}
+              alt="preview"
+              style={{ aspectRatio: "16 / 10", objectFit: "cover", width: "100%" }}
+            />
+          </div>
+          <div className="col-md-8">
+            <div className="mb-3">
+              <label htmlFor="inputName" className="form-label">Nombre</label>
+              <input
+                type="text"
+                className="form-control"
+                id="inputName"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                required
+              />
             </div>
-        </>
-    );
+            <div className="mb-3">
+              <label htmlFor="inputCategory" className="form-label">Categoría</label>
+              <select
+                className="form-select"
+                id="inputCategory"
+                value={categoria}
+                onChange={(e) => setCategoria(e.target.value)}
+                required
+              >
+                <option value="">Seleccione una opción</option>
+                <option value="Horror">Horror</option>
+                <option value="Comedy">Comedy</option>
+                <option value="Action">Action</option>
+                <option value="Drama">Drama</option>
+              </select>
+            </div>
+            <div className="mb-3">
+              <label htmlFor="inputImageURL" className="form-label">URL de la Imagen</label>
+              <input
+                type="url"
+                className="form-control"
+                id="inputImageURL"
+                value={imagenURL}
+                onChange={(e) => setImagenURL(e.target.value)}
+                placeholder="https://..."
+              />
+              <small className="form-text text-muted">
+                Puedes pegar la URL de una imagen externa. Si está vacío, se usará una imagen dummy.
+              </small>
+            </div>
+            <div className="mb-3">
+              <button className="btn btn-primary me-2" type="submit">Guardar</button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => navigate("/series")}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </>
+  );
 }
 
 export default SerieFormPage;
