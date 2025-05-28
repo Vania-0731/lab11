@@ -1,4 +1,6 @@
 import { NavLink } from "react-router-dom";
+import '../Style/SerieComponent.css';
+
 
 function SerieComponent({ codigo, nombre, categoria, imagen, isFavorite, toggleFavorite, onRequestDelete }) {
   // Imagen fallback dummy si no hay url o está vacía

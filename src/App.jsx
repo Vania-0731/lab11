@@ -20,6 +20,7 @@ function App() {
                         <Route path="/home" element={<HomePage />} />
                         <Route path="/categories" element={<CategoryPage />} />
                         <Route path="/series" element={<SeriePage />} />
+                        <Route path="/series/create" element={<SerieFormPage />} />
                         <Route path="/series/edit/:idserie" element={<SerieFormPage />} />
 						<Route path="/categories/edit/:id" element={<CategoryFormPage />} />
                     </Routes>
