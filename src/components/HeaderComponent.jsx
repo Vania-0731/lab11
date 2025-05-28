@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom"
+import '../Style/HeaderComponent.css';
 
 function HeaderComponent() {
     return (
@@ -21,8 +22,8 @@ function HeaderComponent() {
                         </li>
                     </ul>
                     <div>
-                        Bienvenido Jhon Due 
-                        <div className="text-end">
+                        <p class="text-white bg-dark p-1">Bienvenido Chanchirata</p>
+                        <div className="text-white bg-dark p-1">
                             <a href="/">Salir</a>
                         </div> 
                     </div>
