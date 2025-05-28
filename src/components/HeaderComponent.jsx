@@ -23,7 +23,7 @@ function HeaderComponent() {
                     </ul>
                     <div>
                         <p class="text-white bg-dark">Bienvenido Jhon Due</p>
-                        <div className="text-end">
+                        <div className="text-white bg-dark">
                             <a href="/">Salir</a>
                         </div> 
                     </div>
